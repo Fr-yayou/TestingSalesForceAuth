@@ -1,29 +1,31 @@
+require('dotenv').config();
+
 const express = require("express")
-const utils = require ('./utils');
-const dotenv = require('dotenv');
-dotenv.config();
+const salesForceRoutes = require("./routes/salesForceAuth")
+const mongoose = require('mongoose')
+// Express app
 const app = express()
 
 
-app.get('/', async (req, res) => {
-    res.send("Hello from server")
-
+//Mongo DB connection
+mongoose.set('strictQuery', true);
+mongoose.connect(process.env.MONGO_DB_URI).then(() => {
+  console.log("Mongo DB is connected")
+}).catch((err) => {
+  console.log(err)
 })
 
-app.get ('/auth', async (req, res) => {
-    try {
-      res.redirect (utils.request_get_auth_code_url);
-    } catch (error) {
-      res.sendStatus (500);
-      console.log (error.message);
-    }
-});
+// Middleware
+app.use((req, res, next) => {
+  console.log(req.path, req.method)
+  next()
+})
 
-app.get ('/api/callback', async (req, res) => {
-    const authorization_token = req.query.code;
-    console.log(authorization_token)
-});
+// Route for Salesforce
+app.use(salesForceRoutes)
 
+
+// Listen for request
 app.listen(process.env.PORT, () => {
     console.log(`Server running at http://localhost:${process.env.PORT}`)
 })

@@ -1,9 +1,7 @@
 const query_string = require ('querystring');
-const dotenv = require('dotenv');
-dotenv.config();
+require('dotenv').config()
+const axios = require("axios");
 
-
-const salesForce_auth_token_endpoint ='https://revenuerythmesandbox-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?';
 const query_params = {
   client_id: process.env.CLIENT_APP_ID,
   redirect_uri: `http://localhost:4000${process.env.REDIRECT_URI}`,
@@ -14,6 +12,20 @@ const auth_token_params = {
     ...query_params,
 };
 
+const get_access_token = async auth_code => {
+  const access_token_params = {
+    ...query_params,
+    client_secret: process.env.CLIENT_APP_SECRET,
+    code: auth_code,
+    grant_type: 'authorization_code',
+  }
 
-const request_get_auth_code_url = `${salesForce_auth_token_endpoint}${query_string.stringify (auth_token_params)}`;
-module.exports ={request_get_auth_code_url}
+  return await axios ({
+    method: 'post',
+    url: `${process.env.SALES_FORCE_TOKEN_ENDPOINT}${query_string.stringify (access_token_params)}`,
+  })
+}
+
+
+const request_get_auth_code_url = `${process.env.SALES_FORCE_AUTH_ENDPOINT}${query_string.stringify (auth_token_params)}`;
+module.exports ={request_get_auth_code_url,get_access_token}
