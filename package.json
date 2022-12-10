@@ -13,6 +13,7 @@
   "dependencies": {
     "@apideck/node": "^2.4.0",
     "axios": "^1.2.1",
+    "body-parser": "^1.20.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^6.8.0"
